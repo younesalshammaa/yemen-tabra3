@@ -2,28 +2,36 @@ name: CI Pipeline
 
 on:
   push:
-    branches: ["main"]
+    branches: [ "main" ]
   pull_request:
-    branches: ["main"]
+    branches: [ "main" ]
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
+      # 1) سحب الكود من المستودع
       - name: Checkout repository
         uses: actions/checkout@v3
 
+      # 2) تثبيت Node.js
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: "18"
 
-      - name: Install dependencies
+      # 3) تثبيت dependencies من root
+      - name: Install dependencies (root)
         run: npm install
+        working-directory: ./   # المجلد الأساسي
 
-      - name: Run build
+      # 4) بناء الـ Frontend
+      - name: Build Frontend
         run: npm run build
+        working-directory: ./frontend
 
-      - name: Run tests
+      # 5) تشغيل اختبارات Backend إذا موجودة (مثال)
+      - name: Run Backend Tests
         run: npm test
+        working-directory: ./backend
