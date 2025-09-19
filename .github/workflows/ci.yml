@@ -27,9 +27,9 @@ jobs:
         working-directory: ./backend
 
       # 4) تشغيل Backend dev أو test
-      - name: Run Backend dev
-        run: npm run dev
-        working-directory: ./backend
+      #- name: Run Backend dev
+        #run: npm run dev
+        #working-directory: ./backend
 
       # 5) إذا عندك Frontend، تبنيه هنا (مثال)
       - name: Build Frontend
