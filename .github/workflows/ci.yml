@@ -34,4 +34,4 @@ jobs:
       # 5) إذا عندك Frontend، تبنيه هنا (مثال)
       - name: Build Frontend
         run: npm install && npm run build
-        working-directory: ./frontend
+        working-directory: ./frontend-website
