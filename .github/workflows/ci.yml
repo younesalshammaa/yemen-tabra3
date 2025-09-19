@@ -11,27 +11,27 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1) سحب الكود من المستودع
+      # 1) سحب الكود
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # 2) تثبيت Node.js
+      # 2) إعداد Node.js
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: "18"
 
-      # 3) تثبيت dependencies من root
-      - name: Install dependencies (root)
+      # 3) تثبيت dependencies للـ Backend
+      - name: Install Backend dependencies
         run: npm install
-        working-directory: ./   # المجلد الأساسي
-
-      # 4) بناء الـ Frontend
-      - name: Build Frontend
-        run: npm run build
-        working-directory: ./frontend
-
-      # 5) تشغيل اختبارات Backend إذا موجودة (مثال)
-      - name: Run Backend Tests
-        run: npm test
         working-directory: ./backend
+
+      # 4) تشغيل Backend dev أو test
+      - name: Run Backend dev
+        run: npm run dev
+        working-directory: ./backend
+
+      # 5) إذا عندك Frontend، تبنيه هنا (مثال)
+      - name: Build Frontend
+        run: npm install && npm run build
+        working-directory: ./frontend
