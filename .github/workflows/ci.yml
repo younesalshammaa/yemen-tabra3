@@ -1,3 +1,9 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -6,24 +12,17 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '18'
-
-      # --- Backend ---
+      # --- Backend dependencies only (no server start) ---
       - name: Install backend dependencies
         working-directory: ./backend
         run: npm install
 
-      - name: Start backend server
-        working-directory: ./backend
-        run: npm run dev
-        # يمكنك تعليق هذه الخطوة أثناء CI إذا لا تريد تشغيل السيرفر
-
-      # --- Frontend ---
+      # --- Frontend dependencies only ---
       - name: Install frontend dependencies
         working-directory: ./frontend-website
         run: npm install
 
-      # في Vanilla JS، لا يوجد build، فقط نتحقق أن dependencies تثبتت
+      # --- Optional: run simple lint/test if exists ---
+      # - name: Run frontend tests
+      #   working-directory: ./frontend-website
+      #   run: npm test
