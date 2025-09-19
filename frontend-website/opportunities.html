@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>جميع الفرص - يمن تبرع</title>
+
+  <!-- Bootstrap RTL -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css" rel="stylesheet">
+  
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <!-- خط Tajawal -->
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
+
+  <!-- التنسيقات منفصلة -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="main-header" dir="rtl"></header>
+
+  <!-- صفحة الفرص -->
+  <div class="container my-5">
+    <h2 class="text-center mb-4">جميع فرص التبرع</h2>
+
+    <!-- فلاتر -->
+    <div class="row mb-4 justify-content-center">
+      <div class="col-md-4">
+        <select class="form-select" id="filter-category">
+          <option value="">جميع الفئات</option>
+          <option value="أيتام">أيتام</option>
+          <option value="طبية">طبية</option>
+          <option value="إغاثة">إغاثة</option>
+          <option value="تعليم">تعليم</option>
+          <option value="مشاريع صغيرة">مشاريع صغيرة</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- رسالة خطأ -->
+    <div id="error-message" class="alert alert-danger d-none text-center" role="alert">
+      <i class="fas fa-exclamation-triangle"></i> 
+      تعذر تحميل الفرص. تأكد من أن الخادم يعمل.
+    </div>
+
+    <!-- قائمة الفرص -->
+    <div id="opportunities-list" class="row">
+      <!-- سيتم ملؤها بالـ JS -->
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer"></footer>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  
+  <!-- الناف بار والفوتر -->
+  <script src="js/nav-footer.js"></script>
+  
+  <!-- تحميل الفرص -->
+  <script>
+    window.onload = async () => {
+      try {
+        const res = await fetch('/api/donations');
+        if (!res.ok) throw new Error('فشل جلب البيانات');
+
+        const donations = await res.json();
+        const container = document.getElementById('opportunities-list');
+        const errorDiv = document.getElementById('error-message');
+        
+        errorDiv.classList.add('d-none');
+
+        if (donations.length === 0) {
+          container.innerHTML = `
+            <div class="col-12">
+              <div class="alert alert-info text-center">
+                <i class="fas fa-info-circle"></i> لا توجد فرص متاحة حاليًا
+              </div>
+            </div>`;
+          return;
+        }
+
+        container.innerHTML = '';
+
+        donations.forEach(d => {
+          const progress = d.targetAmount > 0 ? (d.raisedAmount / d.targetAmount) * 100 : 0;
+          const imageUrl = d.imageUrl && d.imageUrl.trim() !== ''
+            ? `/uploads/${d.imageUrl.split('/').pop()}`
+            : 'https://via.placeholder.com/400x200?text=لا+توجد+صورة';
+
+          container.innerHTML += `
+            <div class="col-md-4 mb-4">
+              <div class="card h-100">
+                <img src="${imageUrl}" class="card-img-top" alt="${d.title}">
+                <div class="card-body text-end">
+                  <h5 class="card-title">${d.title}</h5>
+                  <p class="card-text">
+                    <i class="fas fa-tags"></i> ${d.category} <br>
+                    <i class="fas fa-map-marker-alt"></i> ${d.location} <br>
+                    <i class="fas fa-users"></i> ${d.beneficiaries} مستفيد(ين)
+                  </p>
+                  <div class="progress mb-2">
+                    <div class="progress-bar bg-success" style="width: ${Math.min(progress, 100)}%"></div>
+                  </div>
+                  <small>${d.raisedAmount || 0} من ${d.targetAmount} ريال</small><br>
+                  <a href="details.html?id=${d.id}" class="btn btn-success btn-sm mt-2">تبرع</a>
+                  <a href="details.html?id=${d.id}" class="btn btn-outline-primary btn-sm mt-2">التفاصيل</a>
+                </div>
+              </div>
+            </div>
+          `;
+        });
+      } catch (error) {
+        console.error("❌ فشل تحميل الفرص:", error);
+        document.getElementById('error-message').classList.remove('d-none');
+        document.getElementById('opportunities-list').innerHTML = '';
+      }
+    };
+
+    // تصفية الفرص
+    document.getElementById('filter-category').onchange = () => {
+      const selected = document.getElementById('filter-category').value;
+      const cards = document.querySelectorAll('#opportunities-list .col-md-4');
+      
+      cards.forEach(card => {
+        const cardHtml = card.innerHTML;
+        const div = document.createElement('div');
+        div.innerHTML = cardHtml;
+        const text = div.textContent || div.innerText;
+        
+        if (selected === '' || text.includes(selected)) {
+          card.style.display = 'block';
+        } else {
+          card.style.display = 'none';
+        }
+      });
+    };
+  </script>
+</body>
+</html>

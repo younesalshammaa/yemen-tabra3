@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>تفاصيل الحالة - يمن تبرع</title>
+
+  <!-- Bootstrap RTL -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css" rel="stylesheet" integrity="sha384-..." crossorigin="anonymous"/>
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+  <!-- خط Tajawal -->
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
+
+  <!-- التنسيقات منفصلة -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="main-header" dir="rtl"></header>
+
+  <!-- محتوى الصفحة -->
+  <div class="container my-5">
+    
+    <!-- زر العودة -->
+    <a href="opportunities.html" class="btn btn-secondary mb-3">
+      <i class="fas fa-arrow-right"></i> العودة
+    </a>
+    
+    <!-- محتوى التفاصيل -->
+    <div id="details-content">
+      <div class="row">
+        <!-- الصورة -->
+        <div class="col-md-6 mb-4 mb-md-0">
+          <img id="detail-image" 
+               class="donation-img" 
+               src="https://via.placeholder.com/600x300?text=جارٍ-التحميل" 
+               alt="صورة الحالة"
+               onerror="this.src='https://via.placeholder.com/600x300?text=خطأ+في+الصورة'; this.onerror=null;">
+        </div>
+        
+        <!-- المعلومات -->
+        <div class="col-md-6">
+          <h2 id="detail-title" class="mb-4 text-dark"></h2>
+          
+          <p class="fs-5">
+            <strong><i class="fas fa-tags me-2"></i> الفئة:</strong> 
+            <span id="detail-category"></span><br>
+            <strong><i class="fas fa-map-marker-alt me-2"></i> الموقع:</strong> 
+            <span id="detail-location"></span><br>
+            <strong><i class="fas fa-users me-2"></i> المستفيدون:</strong> 
+            <span id="detail-beneficiaries"></span><br>
+            <strong><i class="fas fa-calendar me-2"></i> تاريخ الانتهاء:</strong> 
+            <span id="detail-end-date"></span>
+          </p>
+          
+          <!-- شريط التقدم -->
+          <div class="mt-4">
+            <div class="progress mb-2" style="height: 20px;">
+              <div id="detail-progress" class="progress-bar bg-success" style="width: 0%"></div>
+            </div>
+            <p class="fw-bold">
+              تم جمع: <span id="detail-raised"></span> من <span id="detail-target"></span> ريال
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- وصف الحالة -->
+      <div class="mt-5">
+        <h4 class="section-title">تفاصيل الحالة</h4>
+        <p id="detail-description" class="lead" style="line-height: 1.8; text-align: justify;"></p>
+      </div>
+
+      <!-- نموذج التبرع -->
+      <div class="mt-5 p-4 bg-light rounded shadow-sm">
+        <h5 class="mb-4"><i class="fas fa-heart text-danger"></i> تبرع الآن</h5>
+        
+        <!-- أزرار مبالغ سريعة -->
+        <div class="btn-group mb-3" role="group">
+          <button class="btn btn-outline-primary" onclick="setAmount(100)">100 ريال</button>
+          <button class="btn btn-outline-primary" onclick="setAmount(200)">200 ريال</button>
+          <button class="btn btn-outline-primary" onclick="setAmount(500)">500 ريال</button>
+          <button class="btn btn-outline-primary" onclick="setAmount(1000)">1000 ريال</button>
+        </div>
+        
+        <!-- حقل مخصص -->
+        <div class="input-group mb-3">
+          <input type="number" id="custom-amount" class="form-control" placeholder="أو أدخل مبلغًا">
+          <button class="btn btn-primary" onclick="donate()">تبرع الآن</button>
+        </div>
+        
+        <small class="text-muted">* هذه عملية محاكاة، لا يتم جمع أموال حقيقية</small>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer"></footer>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  
+  <!-- الناف بار والفوتر -->
+  <script src="js/nav-footer.js"></script>
+  
+  <!-- تحميل التفاصيل -->
+  <script>
+    // استخراج ID من الرابط
+    const urlParams = new URLSearchParams(window.location.search);
+    const id = urlParams.get('id');
+
+    if (!id) {
+      alert('لم يتم تحديد الحالة');
+      window.location.href = 'opportunities.html';
+    }
+
+    // تحميل بيانات الحالة
+    window.onload = async () => {
+      try {
+        const res = await fetch(`/api/donations/${id}`);
+        
+        if (!res.ok) {
+          throw new Error(`الحالة غير موجودة (الكود: ${res.status})`);
+        }
+
+        const d = await res.json();
+
+        // ملء البيانات
+        document.getElementById('detail-title').textContent = d.title;
+        document.getElementById('detail-category').textContent = d.category;
+        document.getElementById('detail-location').textContent = d.location;
+        document.getElementById('detail-beneficiaries').textContent = d.beneficiaries;
+        document.getElementById('detail-end-date').textContent = new Date(d.endDate).toLocaleDateString('ar-SA');
+        document.getElementById('detail-description').textContent = d.description;
+        document.getElementById('detail-raised').textContent = d.raisedAmount || 0;
+        document.getElementById('detail-target').textContent = d.targetAmount;
+
+        // ✅ تصحيح مسار الصورة
+        const imageUrl = d.imageUrl && d.imageUrl.trim() !== ''
+          ? `/uploads/${d.imageUrl.split('/').pop()}`
+          : 'https://via.placeholder.com/600x300?text=لا+توجد+صورة';
+
+        const imgElement = document.getElementById('detail-image');
+        imgElement.src = imageUrl;
+
+        // تحديث شريط التقدم
+        const progress = d.targetAmount > 0 ? (d.raisedAmount / d.targetAmount) * 100 : 0;
+        document.getElementById('detail-progress').style.width = `${Math.min(progress, 100)}%`;
+        
+      } catch (error) {
+        console.error('فشل تحميل التفاصيل:', error);
+        document.getElementById('details-content').innerHTML = `
+          <div class="alert alert-danger text-center">
+            <i class="fas fa-exclamation-triangle"></i>
+            تعذر تحميل تفاصيل الحالة. تأكد من أن الخادم يعمل.
+          </div>
+          <div class="text-center mt-3">
+            <a href="opportunities.html" class="btn btn-secondary">العودة إلى الفرص</a>
+          </div>
+        `;
+      }
+    };
+
+    // تعيين مبلغ التبرع
+    function setAmount(amount) {
+      document.getElementById('custom-amount').value = amount;
+    }
+
+    // محاكاة التبرع
+    function donate() {
+      const amountInput = document.getElementById('custom-amount');
+      const amount = amountInput.value;
+
+      if (!amount || amount <= 0) {
+        alert('يرجى إدخال مبلغ تبرع صحيح');
+        return;
+      }
+
+      alert(`✅ تم التبرع بـ ${amount} ريال بنجاح!\nشكرًا لدعمك الإنساني ❤️`);
+    }
+  </script>
+</body>
+</html>

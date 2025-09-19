@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>لوحة التحكم - يمن تبرع</title>
+  
+  <!-- ✅ 1. Bootstrap بدون مسافات زائدة -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css" rel="stylesheet" integrity="sha384-..." crossorigin="anonymous"/>
+  
+  <!-- ✅ 2. Font Awesome بدون مسافات -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  
+  <!-- ✅ خط Tajawal -->
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      background-color: #f8f9fa;
+      font-family: 'Tajawal', sans-serif;
+    }
+    .sidebar {
+      background: #2c3e50;
+      min-height: 100vh;
+      padding: 20px 0;
+      box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+    }
+    .sidebar a {
+      color: #ecf0f1;
+      padding: 12px 20px;
+      text-decoration: none;
+      display: block;
+      transition: all 0.3s;
+    }
+    .sidebar a:hover, .sidebar a.active {
+      background: #34495e;
+      border-right: 4px solid #27ae60;
+    }
+    .sidebar .logo {
+      margin-bottom: 30px;
+      padding: 0 20px;
+    }
+    .sidebar .logo h4 {
+      margin: 0;
+      color: #fff;
+      font-weight: 700;
+    }
+    .sidebar .logo small {
+      color: #bdc3c7;
+    }
+    .main-content {
+      padding: 30px;
+    }
+    .stats-card {
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      transition: transform 0.2s;
+    }
+    .stats-card:hover {
+      transform: translateY(-5px);
+    }
+    .card-img-top {
+      height: 150px;
+      object-fit: cover;
+      border-top-left-radius: 12px;
+      border-top-right-radius: 12px;
+    }
+    .footer {
+      text-align: center;
+      margin-top: 50px;
+      color: #6c757d;
+      font-size: 0.9rem;
+      padding: 20px 0;
+      border-top: 1px solid #dee2e6;
+    }
+    main {
+      min-height: 100vh;
+    }
+  </style>
+</head>
+<body>
+  <div class="container-fluid">
+    <div class="row">
+      <!-- القائمة الجانبية -->
+      <nav class="col-md-3 col-lg-2 sidebar">
+        <div class="logo text-center">
+          <h4>يمن تبرع</h4>
+          <small>لوحة التحكم</small>
+        </div>
+        <a href="index.html" class="active"><i class="fas fa-tachometer-alt"></i> الإحصائيات</a>
+        <a href="add-donation.html"><i class="fas fa-plus-circle"></i> إضافة حالة</a>
+        <a href="manage-donations.html"><i class="fas fa-list"></i> إدارة الحالات</a>
+        <a href="#" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> خروج</a>
+      </nav>
+
+      <!-- المحتوى الرئيسي -->
+      <main class="col-md-9 col-lg-10 main-content">
+        <h2><i class="fas fa-tachometer-alt"></i> لوحة الإحصائيات</h2>
+        <hr>
+
+        <!-- الإحصائيات -->
+        <div class="row mb-5">
+          <div class="col-md-3">
+            <div class="card bg-primary text-white stats-card">
+              <div class="card-body text-center">
+                <h5 id="total-opportunities">0</h5>
+                <p class="mb-0">إجمالي الفرص</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="card bg-success text-white stats-card">
+              <div class="card-body text-center">
+                <h5 id="completed-opportunities">0</h5>
+                <p class="mb-0">المكتملة</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="card bg-info text-white stats-card">
+              <div class="card-body text-center">
+                <h5 id="total-raised">0</h5>
+                <p class="mb-0">إجمالي التبرعات (ريال)</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="card bg-warning text-white stats-card">
+              <div class="card-body text-center">
+                <h5 id="active-opportunities">0</h5>
+                <p class="mb-0">قيد التمويل</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <h4><i class="fas fa-clock-rotate-left me-2"></i> آخر الحالات المضافة</h4>
+        <div id="recent-donations" class="row">
+          <!-- سيتم ملؤها بالـ JS -->
+        </div>
+
+        <!-- رسالة خطأ -->
+        <div id="error-message" class="alert alert-danger d-none mt-4" role="alert">
+          <i class="fas fa-exclamation-triangle"></i> 
+          <span id="error-text"></span>
+        </div>
+      </main>
+    </div>
+
+    <footer class="footer">
+      &copy; 2025 يمن تبرع - مشروع تخرج | طلاب هندسة برمجيات
+    </footer>
+  </div>
+
+  <script>
+    // تسجيل الخروج
+    document.getElementById('logoutBtn').onclick = () => {
+      const confirmed = confirm('هل أنت متأكد أنك تريد تسجيل الخروج؟');
+      if (!confirmed) return;
+      
+      localStorage.removeItem('adminToken');
+      window.location.href = 'login.html';
+    };
+
+    // جلب الإحصائيات
+    window.onload = async () => {
+      const token = localStorage.getItem('adminToken');
+      if (!token) {
+        alert('يرجى تسجيل الدخول أولاً');
+        window.location.href = 'login.html';
+        return;
+      }
+
+      try {
+        const res = await fetch('http://localhost:3000/api/donations', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        if (!res.ok) {
+          throw new Error(`فشل جلب البيانات (الكود: ${res.status})`);
+        }
+
+        const donations = await res.json();
+
+        // حساب الإحصائيات
+        const total = donations.length;
+        const completed = donations.filter(d => d.status === 'completed').length;
+        const raised = donations.reduce((sum, d) => sum + parseFloat(d.raisedAmount || 0), 0);
+        const active = total - completed;
+
+        // عرض الإحصائيات
+        document.getElementById('total-opportunities').textContent = total;
+        document.getElementById('completed-opportunities').textContent = completed;
+        document.getElementById('total-raised').textContent = Math.floor(raised);
+        document.getElementById('active-opportunities').textContent = active;
+
+        // عرض آخر 3 حالات
+        const recent = donations.slice(0, 3);
+        const container = document.getElementById('recent-donations');
+        container.innerHTML = '';
+
+        if (recent.length === 0) {
+          container.innerHTML = `
+            <div class="col-12">
+              <div class="alert alert-info text-center">
+                <i class="fas fa-info-circle"></i> لا توجد حالات مضافة بعد
+              </div>
+            </div>
+          `;
+          return;
+        }
+
+        recent.forEach(d => {
+          // ✅ استخدام الرابط الكامل من الخادم
+          const imageUrl = d.imageUrl && d.imageUrl.trim() !== ''
+            ? `http://localhost:3000${d.imageUrl.trim()}`
+            : 'https://via.placeholder.com/300x150?text=لا+توجد+صورة';
+
+          container.innerHTML += `
+            <div class="col-md-4 mb-4">
+              <div class="card h-100">
+                <img src="${imageUrl}" 
+                     class="card-img-top" 
+                     alt="${d.title}"
+                     onerror="this.src='https://via.placeholder.com/300x150?text=خطأ+في+الصورة'; this.onerror=null;">
+                <div class="card-body">
+                  <h6 class="card-title fw-bold">${d.title}</h6>
+                  <p class="card-text small text-muted">
+                    <i class="fas fa-map-marker-alt me-1"></i> ${d.location} <br>
+                    <i class="fas fa-users me-1"></i> ${d.beneficiaries} مستفيد(ين) <br>
+                    <i class="fas fa-tags me-1"></i> ${d.category}
+                  </p>
+                </div>
+              </div>
+            </div>
+          `;
+        });
+      } catch (error) {
+        console.error('فشل تحميل البيانات:', error);
+        document.getElementById('recent-donations').innerHTML = `
+          <div class="col-12">
+            <div class="alert alert-danger text-center">
+              <i class="fas fa-exclamation-triangle"></i>
+              تعذر تحميل البيانات. تأكد من أن الخادم يعمل.
+            </div>
+          </div>
+        `;
+      }
+    };
+  </script>
+</body>
+</html>
