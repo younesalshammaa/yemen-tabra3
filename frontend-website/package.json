@@ -1,3 +1,13 @@
-"scripts": {
-  "build": "your-build-command"
+{
+  "name": "frontend-website",
+  "version": "1.0.0",
+  "description": "واجهة المستخدم لمنصة اليمن تبرع",
+  "scripts": {
+    "build": "react-scripts build",
+    "start": "react-scripts start"
+  },
+  "dependencies": {
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0"
+  }
 }
