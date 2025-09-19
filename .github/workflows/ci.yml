@@ -1,37 +1,29 @@
-name: CI Pipeline
-
-on:
-  push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
-
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      # 1) سحب الكود
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # 2) إعداد Node.js
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: "18"
+          node-version: '18'
 
-      # 3) تثبيت dependencies للـ Backend
-      - name: Install Backend dependencies
-        run: npm install
+      # --- Backend ---
+      - name: Install backend dependencies
         working-directory: ./backend
+        run: npm install
 
-      # 4) تشغيل Backend dev أو test
-      #- name: Run Backend dev
-        #run: npm run dev
-        #working-directory: ./backend
+      - name: Start backend server
+        working-directory: ./backend
+        run: npm run dev
+        # يمكنك تعليق هذه الخطوة أثناء CI إذا لا تريد تشغيل السيرفر
 
-      # 5) إذا عندك Frontend، تبنيه هنا (مثال)
-      - name: Build Frontend
-        run: npm install && npm run build
+      # --- Frontend ---
+      - name: Install frontend dependencies
         working-directory: ./frontend-website
+        run: npm install
+
+      # في Vanilla JS، لا يوجد build، فقط نتحقق أن dependencies تثبتت
